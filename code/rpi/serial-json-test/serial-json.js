@@ -11,7 +11,12 @@ port.pipe(parser);
 
 // データ受信
 parser.on('data', (data) => {
-  console.log(data);
+  try {
+    var json = JSON.parse(data);
+    console.log(`recv : ${json.relay_status}`);
+  } catch(e) {
+    console.error(e.message);
+  }
 });
 
 port.on('open', () => {
@@ -27,16 +32,19 @@ port.on('error', (err) => {
 });
 
 var state = 0;
+var jsonObj = {};
 
-// 1秒毎にoとfを交互に送る
+// 1秒毎に relay:on と relay:off を交互に送る
 setInterval(() => {
   // データ送信
   if(state === 0) {
-    port.write('o\n');
+    jsonObj.relay = 'on';
     state = 1;
   } else {
-    port.write('f\n');
+    jsonObj.relay = 'off';
     state = 0;
   }
+  port.write(`${JSON.stringify(jsonObj)}\n`);
+  console.log(`send : ${JSON.stringify(jsonObj)}`);
 }, 1000);
 
