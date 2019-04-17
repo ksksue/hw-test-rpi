@@ -20,9 +20,3 @@ sudo raspi-config nonint do_hostname ${HOST_NAME}
 # Timezone
 sudo raspi-config nonint do_change_timezone ${TIMEZONE}
 
-# sshを有効にする
-# sudo raspi-config nonint do_ssh 0
-
-# sshを無効にする
-# sudo raspi-config nonint do_ssh 1
-

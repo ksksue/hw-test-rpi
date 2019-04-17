@@ -1,3 +1,5 @@
+#include <ArduinoJson.h>
+
 #define SERIAL_BAUDRATE 115200
 #define SERIAL_DELIMITER '\n'
 
@@ -8,6 +10,8 @@
 
 String inputString = "";
 boolean stringComplete = false;
+
+String relay_status;
 
 void setup() {
   Serial.begin(SERIAL_BAUDRATE);
@@ -21,15 +25,15 @@ void loop() {
   if (stringComplete) {
 
     // シリアル受信完了時にここにくる
-    if(inputString.charAt(0) == 'o') {
+    // いったんこのサンプルではrelayの状態をJSON形式でエコーバック
+    if(relay_status.compareTo("on") == 0) {
       RELAY_ON();
-      Serial.println("relay on");
-    } else if(inputString.charAt(0) == 'f') {
+      Serial.println("{ \"relay_status\": \"on\" }");
+    } else if(relay_status.compareTo("off") == 0) {
       RELAY_OFF();
-      Serial.println("relay off");      
+      Serial.println("{ \"relay_status\": \"off\" }");
     }
 
-    inputString = "";
     stringComplete = false;
   }
 
@@ -42,6 +46,26 @@ void serialEvent() {
     char inChar = (char)Serial.read();
     inputString += inChar;
     if (inChar == SERIAL_DELIMITER) {
+      StaticJsonDocument<256> doc;
+      DeserializationError error = deserializeJson(doc, inputString.c_str());
+      inputString = "";
+
+      // when error, return json error messages
+      if (error) {
+        Serial.print("{ 'error': '");
+        Serial.print(error.c_str());
+        Serial.println("' }");
+        break;
+      }
+
+      ////////////////////
+      // json parser
+      ////////////////////
+
+      relay_status = doc["relay"].as<String>();
+
+      ////////////////////
+
       stringComplete = true;
     }
   }

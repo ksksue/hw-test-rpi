@@ -16,14 +16,8 @@ echo "tmpfs  /var/log  tmpfs  size=70M  0  0" | sudo tee -a /etc/fstab
 
 # Install script
 cd /tmp
-wget https://raw.githubusercontent.com/janztec/empc-arpi-linux-readonly/master/install-experimental.sh -O install-experimental.sh
+wget https://raw.githubusercontent.com/janztec/empc-arpi-linux-readonly/master/\
+install-experimental.sh -O install-experimental.sh
+
 sudo bash install-experimental.sh
-
-rm ~/2-rpi-setup.sh
-rm ~/4-rpi-sd-to-ramfs.sh
-
-echo
-echo next action : 
-echo [rpi]$ sudo reboot
-echo
 
